@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 
+import { StorageModule } from './storage/storage.module';
+
 @Module({
-  imports: [],
-  exports: [],
+  imports: [StorageModule],
+  exports: [StorageModule],
 })
 export class LibsModule {}

@@ -14,8 +14,37 @@ services:
     networks:
       - home-inventory-network
 
+  redis:
+    container_name: home-inventory-redis
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - ${REDIS_PORT}:6379
+    volumes:
+      - redis_data:/data
+    networks:
+      - home-inventory-network
+
+  minio:
+    container_name: home-inventory-minio
+    image: minio/minio:latest
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+    ports:
+      - ${S3_PORT}:9000
+      - ${S3_CONSOLE_PORT}:9001
+    volumes:
+      - minio_data:/data
+    networks:
+      - home-inventory-network
+
 volumes:
   mongo_data:
+  redis_data:
+  minio_data:
 
 networks:
   home-inventory-network:
