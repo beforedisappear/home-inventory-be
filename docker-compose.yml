@@ -25,6 +25,21 @@ services:
     networks:
       - home-inventory-network
 
+  mailpit:
+    container_name: home-inventory-mailpit
+    image: axllent/mailpit:latest
+    restart: always
+    ports:
+      - ${SMTP_PORT}:1025      # SMTP
+      - ${MAILPIT_UI_PORT}:8025 # Web UI
+    volumes:
+      - mailpit_data:/data
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+    networks:
+      - home-inventory-network
+
   minio:
     container_name: home-inventory-minio
     image: minio/minio:latest
@@ -45,6 +60,7 @@ volumes:
   mongo_data:
   redis_data:
   minio_data:
+  mailpit_data:
 
 networks:
   home-inventory-network:
