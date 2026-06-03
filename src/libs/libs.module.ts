@@ -4,7 +4,7 @@ import { StorageModule } from './storage/storage.module';
 import { MailModule } from './mail/mail.module';
 
 /**
- *  Модуль - агрегатор внутренних сервисов-обёрток над внешними решениями
+ *  Модуль - агрегатор внутренних сервисов-обёрток над внешними решениями (глобальный)
  */
 @Module({
   imports: [StorageModule, MailModule],
