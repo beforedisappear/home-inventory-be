@@ -3,3 +3,5 @@ export { getValidationPipeConfig } from './validation-pipe.config';
 export { getCorsConfig } from './cors.config';
 export { getRedisConfig } from './redis.config';
 export { getMailConfig } from './mail.config';
+export { getBullConfig } from './bull.config';
+export { getSwaggerConfig } from './swagger.config';
