@@ -1,16 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
-import { HydratedDocument } from 'mongoose';
 
-export type UserDocument = HydratedDocument<User>;
+import type { TimestampedDocument } from '@/shared/types/mongo';
+
+export type UserDocument = TimestampedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
-  @ApiProperty({ example: 'user@example.com' })
   @Prop({ required: true, unique: true })
   email: string;
 
-  @ApiProperty({ example: 'John Doe' })
   @Prop()
   name: string;
 }

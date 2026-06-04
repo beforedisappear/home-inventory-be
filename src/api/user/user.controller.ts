@@ -36,9 +36,7 @@ export class UserController {
     return this.userService.update(userId, dto);
   }
 
-  @ApiOperation({
-    summary: 'Запросить смену email — код отправляется на новый адрес',
-  })
+  @ApiOperation({ summary: 'Запросить смену email' })
   @HttpCode(HttpStatus.OK)
   @Post('email/request-change')
   requestEmailChange(

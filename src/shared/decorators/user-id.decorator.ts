@@ -10,15 +10,12 @@ export const UserId = createParamDecorator(
     const request = ctx.switchToHttp().getRequest<Request>();
     const user = request.user;
 
-    if (!user) {
-      throw new UnauthorizedException('Request is not authenticated');
-    }
+    if (!user) throw new UnauthorizedException('Request is not authenticated');
 
-    const id = user._id?.toString() ?? user.sub;
+    const id = user.id ?? user._id?.toString() ?? user.sub;
 
-    if (!id) {
+    if (!id)
       throw new UnauthorizedException('User id missing in token payload');
-    }
 
     return id;
   },

@@ -9,13 +9,18 @@ import { randomUUID } from 'crypto';
 
 import { RedisService } from '@/infra/redis/redis.service';
 import { UserService } from '@/api/user/user.service';
+import { SentResponseDto } from '@/shared/dto';
 
-import { LoginDto, AuthenticateDto, RefreshTokenDto } from './dto';
+import {
+  LoginDto,
+  AuthenticateDto,
+  RefreshTokenDto,
+  AuthTokenPairDto,
+} from './dto';
 import {
   AUTH_REFRESH_JWT_KIND,
   AccessJwtPayload,
   RefreshJwtPayload,
-  AuthTokenPair,
 } from './interfaces';
 import { MailService } from '@/libs/mail/mail.service';
 
@@ -43,7 +48,7 @@ export class AuthService {
     );
   }
 
-  async sendCode(dto: LoginDto) {
+  async sendCode(dto: LoginDto): Promise<SentResponseDto> {
     const code = this.generateCode();
 
     await this.redisService.set(
@@ -77,7 +82,7 @@ export class AuthService {
 
     await this.redisService.del(codeKey);
 
-    return this.issueTokenPair(user._id.toString());
+    return this.issueTokenPair(user.id);
   }
 
   async refreshTokens(dto: RefreshTokenDto) {
@@ -109,7 +114,7 @@ export class AuthService {
     return this.userService.findById(payload.sub);
   }
 
-  private async issueTokenPair(userId: string): Promise<AuthTokenPair> {
+  private async issueTokenPair(userId: string): Promise<AuthTokenPairDto> {
     const accessPayload: AccessJwtPayload = { sub: userId };
 
     const jti = randomUUID();

@@ -7,6 +7,7 @@ import {
 
 import { RedisService } from '@/infra/redis/redis.service';
 import { MailService } from '@/libs/mail/mail.service';
+import { SentResponseDto } from '@/shared/dto';
 
 import { UserRepository } from './user.repository';
 import {
@@ -16,6 +17,7 @@ import {
   ConfirmEmailChangeDto,
 } from './dto';
 import type { EmailChangePayload } from './interfaces';
+import { UserMapper } from './mappers/user.mapper';
 
 const EMAIL_CHANGE_TTL_SEC = 15 * 60;
 
@@ -32,19 +34,22 @@ export class UserService {
 
     if (!user) throw new NotFoundException(`User not found`);
 
-    return user;
+    return UserMapper.toResponseDto(user);
   }
 
-  findByEmail(email: string) {
-    return this.userRepository.findByEmail(email);
+  async findByEmail(email: string) {
+    const user = await this.userRepository.findByEmail(email);
+    return user ? UserMapper.toResponseDto(user) : null;
   }
 
   async findOrCreateByEmail(email: string) {
     const existing = await this.userRepository.findByEmail(email);
 
-    if (existing) return existing;
+    if (existing) return UserMapper.toResponseDto(existing);
 
-    return this.userRepository.createByEmail(email);
+    const created = await this.userRepository.createByEmail(email);
+
+    return UserMapper.toResponseDto(created);
   }
 
   async create(dto: CreateUserDto) {
@@ -55,7 +60,9 @@ export class UserService {
         `User with email ${dto.email} already exists`,
       );
 
-    return this.userRepository.create(dto);
+    const created = await this.userRepository.create(dto);
+
+    return UserMapper.toResponseDto(created);
   }
 
   async update(id: string, dto: UpdateUserDto) {
@@ -63,7 +70,7 @@ export class UserService {
 
     if (!updated) throw new NotFoundException(`User ${id} not found`);
 
-    return updated;
+    return UserMapper.toResponseDto(updated);
   }
 
   async delete(id: string) {
@@ -74,7 +81,10 @@ export class UserService {
     return { id };
   }
 
-  async requestEmailChange(userId: string, dto: RequestEmailChangeDto) {
+  async requestEmailChange(
+    userId: string,
+    dto: RequestEmailChangeDto,
+  ): Promise<SentResponseDto> {
     const { newEmail } = dto;
 
     const user = await this.findById(userId);
@@ -144,7 +154,7 @@ export class UserService {
 
     await this.redis.del(redisKey);
 
-    return updated;
+    return UserMapper.toResponseDto(updated);
   }
 
   private generateCode(): string {
