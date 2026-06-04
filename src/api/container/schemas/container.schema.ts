@@ -1,0 +1,55 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
+
+import type { TimestampedDocument } from '@/shared/types/mongo';
+
+// Тип контейнера для UI-иконки и правил вложения.
+// "Корневой" статус определяется через parent === null, отдельного kind для этого не надо.
+export const CONTAINER_KIND = [
+  'room', // помещение: квартира, комната, кухня, гараж, балкон, кладовка
+  'cabinet', // закрытая мебель: шкаф, тумба, комод, гардероб, стеллаж
+  'drawer', // секция мебели: ящик, полка, отделение, этажерка
+  'box', // жёсткая переносная тара: коробка, контейнер, корзина
+  'bag', // мягкая тара: сумка, пакет, рюкзак, чехол
+] as const;
+
+export type ContainerKind = (typeof CONTAINER_KIND)[number];
+
+export type ContainerDocument = TimestampedDocument<Container>;
+
+@Schema({ timestamps: true })
+export class Container {
+  // владелец контейнера
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  owner: Types.ObjectId;
+
+  // имя контейнера
+  @Prop({ required: true, trim: true, minlength: 1, maxlength: 128 })
+  name: string;
+
+  // тип контейнера для UI-иконки и логики правил
+  @Prop({ type: String, enum: CONTAINER_KIND, default: null })
+  kind: ContainerKind | null;
+
+  // прямой родитель в дереве. null = root-уровень
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'Container',
+    default: null,
+    index: true, // индекс для оптимизации запросов на поиск дочерних контейнеров
+  })
+  parent: Types.ObjectId | null;
+
+  // effective rule — правило иерархии (копируется от parent при создании)
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'ContainerRule',
+    default: null,
+  })
+  rule: Types.ObjectId | null;
+}
+
+export const ContainerSchema = SchemaFactory.createForClass(Container);
+
+// композитный индекс для оптимизации запросов на поиск контейнеров по владельцу и родителю
+ContainerSchema.index({ owner: 1, parent: 1 });
