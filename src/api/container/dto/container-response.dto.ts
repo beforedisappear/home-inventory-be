@@ -18,11 +18,15 @@ export class ContainerResponseDto {
 
   @IsOptional()
   @IsMongoId()
-  parent: string | null;
+  parentId: string | null;
 
   @IsOptional()
   @IsMongoId()
-  rule: string | null;
+  rootId: string | null;
+
+  @IsOptional()
+  @IsMongoId()
+  ruleId: string | null;
 
   @IsDate()
   createdAt: Date;

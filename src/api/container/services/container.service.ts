@@ -3,20 +3,23 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 
 import { ContainerRepository } from '../repositories/container.repository';
-import { ContainerRuleRepository } from '../repositories/container-rule.repository';
+import { ContainerRuleService } from './container-rule.service';
 import { CreateContainerDto } from '../dto/create-container.dto';
 import { UpdateContainerDto } from '../dto/update-container.dto';
 import { MoveContainerDto } from '../dto/move-container.dto';
 import { ContainerMapper } from '../mappers/container.mapper';
+import type { ContainerKind } from '../schemas/container.schema';
+import type { ContainerRuleDocument } from '../schemas/container-rule.schema';
 
 @Injectable()
 export class ContainerService {
   constructor(
     private readonly repo: ContainerRepository,
-    private readonly ruleRepo: ContainerRuleRepository,
+    private readonly ruleService: ContainerRuleService,
   ) {}
 
   /** Прямые дети уровня. parentId === null → root-контейнеры */
@@ -29,7 +32,7 @@ export class ContainerService {
   async findById(ownerId: string, id: string) {
     const container = await this.repo.findById(id);
 
-    if (!container || container.owner.toString() !== ownerId)
+    if (!container || container.ownerId.toString() !== ownerId)
       throw new NotFoundException('Container not found');
 
     return ContainerMapper.toResponseDto(container);
@@ -42,10 +45,8 @@ export class ContainerService {
       if (dto.kind)
         throw new BadRequestException('kind invalid for the root container');
 
-      // если задан ruleId — проверяем что правило существует и принадлежит юзеру
       if (dto.ruleId) {
-        const rule = await this.ruleRepo.findByIdAndOwner(dto.ruleId, ownerId);
-        if (!rule) throw new NotFoundException('ContainerRule not found');
+        await this.ruleService.findDocumentById(ownerId, dto.ruleId);
       }
 
       const created = await this.repo.create(ownerId, dto);
@@ -64,14 +65,30 @@ export class ContainerService {
     // parent существует и принадлежит этому юзеру
     const parent = await this.repo.findById(dto.parentId!);
 
-    if (!parent || parent.owner.toString() !== ownerId) {
-      throw new NotFoundException('Parent not found');
-    }
+    if (!parent) throw new NotFoundException('Parent not found');
 
-    const created = await this.repo.create(ownerId, {
-      ...dto,
-      ruleId: parent.rule?.toString() ?? undefined,
-    });
+    if (parent.ownerId.toString() !== ownerId)
+      throw new ForbiddenException('Parent not found');
+
+    const rootId = parent.rootId?.toString() ?? parent._id.toString();
+
+    const rule = parent.ruleId
+      ? await this.ruleService.findDocumentById(
+          ownerId,
+          parent.ruleId.toString(),
+        )
+      : null;
+
+    this.assertPlacementAllowed(dto.kind, parent.kind, rule);
+
+    const created = await this.repo.create(
+      ownerId,
+      {
+        ...dto,
+        ruleId: parent.ruleId?.toString() ?? undefined,
+      },
+      rootId,
+    );
 
     return ContainerMapper.toResponseDto(created);
   }
@@ -87,8 +104,8 @@ export class ContainerService {
   async delete(ownerId: string, id: string) {
     const container = await this.repo.findById(id);
 
-    if (!container || container.owner.toString() !== ownerId)
-      throw new NotFoundException('Container not found');
+    if (!container || container.ownerId.toString() !== ownerId)
+      throw new ForbiddenException('Container not found');
 
     // не пускаем удалять не-пустой контейнер — юзер должен сначала разобрать содержимое
     const childrenCount = await this.repo.countChildren(id);
@@ -108,10 +125,12 @@ export class ContainerService {
   async move(ownerId: string, id: string, dto: MoveContainerDto) {
     const node = await this.repo.findById(id);
 
-    if (!node || node.owner.toString() !== ownerId)
-      throw new NotFoundException('Container not found');
+    if (!node) throw new NotFoundException('Container not found');
 
-    if (!node.parent)
+    if (node.ownerId.toString() !== ownerId)
+      throw new ForbiddenException('Yor not allowed to move this container');
+
+    if (!node.parentId)
       throw new BadRequestException(
         'Root container cannot be moved (delete and recreate instead)',
       );
@@ -121,29 +140,75 @@ export class ContainerService {
 
     const newParent = await this.repo.findById(dto.parentId);
 
-    if (!newParent || newParent.owner.toString() !== ownerId)
-      throw new NotFoundException('New parent not found');
+    if (!newParent) throw new NotFoundException('New parent not found');
 
-    // защита от цикла: новый parent не должен быть в поддереве перемещаемого узла
+    if (newParent.ownerId.toString() !== ownerId)
+      throw new ForbiddenException('Yor not allowed to move this container');
+
+    // берём всё поддерево перемещаемого контейнера: сам node + все descendants
     const subtreeIds = await this.repo.findSubtreeIds(id);
 
+    // защита от цикла: новый parent не должен быть внутри этого поддерева
     if (subtreeIds.includes(dto.parentId))
       throw new BadRequestException(
         'Cannot move container into its own descendant',
       );
 
-    // меняем parent
+    const currentRootId = node.rootId?.toString();
+
+    const newParentRootId =
+      newParent.rootId?.toString() ?? newParent._id.toString();
+
+    if (!currentRootId) throw new NotFoundException('Container tree is broken');
+
+    if (currentRootId !== newParentRootId)
+      throw new BadRequestException('Cannot move container to another root');
+
+    const newRuleId = newParent.ruleId?.toString() ?? null;
+
+    // загружаем rule нового parent. Если newParent.ruleId === null, ограничений нет.
+    const newRule = newRuleId
+      ? await this.ruleService.findDocumentById(ownerId, newRuleId)
+      : null;
+
+    // проверяем можно ли node.kind положить в newParent.kind.
+    this.assertPlacementAllowed(node.kind!, newParent.kind, newRule);
+
     await this.repo.updateParent(id, dto.parentId);
 
-    // если у нового parent другой rule — каскадно обновляем поддерево
-    const newRule = newParent.rule?.toString() ?? null;
+    return this.findById(ownerId, id);
+  }
 
-    const currentRule = node.rule?.toString() ?? null;
+  private assertPlacementAllowed(
+    nodeKind: ContainerKind,
+    parentKind: ContainerKind | null,
+    rule: ContainerRuleDocument | null,
+  ): void {
+    if (!rule) return;
 
-    if (newRule !== currentRule) {
-      await this.repo.setRuleOnIds(subtreeIds, newRule);
+    const kindRule = rule.kindRules.find((item) => item.kind === nodeKind);
+
+    if (!kindRule)
+      throw new BadRequestException(
+        `Container kind "${nodeKind}" is not allowed by rule "${rule.name}"`,
+      );
+
+    // parentKind === null означает, что parent — root-контейнер без kind.
+    if (!parentKind) {
+      // для root проверяем отдельный флаг: можно ли класть childKind прямо в root.
+      if (kindRule.canBeInsideRoot) return;
+
+      throw new BadRequestException(
+        `Container kind "${nodeKind}" is not allowed inside root by rule "${rule.name}"`,
+      );
     }
 
-    return this.findById(ownerId, id);
+    // проверяем входит ли kind родительского контейнера в allowedParents
+    if (kindRule.allowedParents.includes(parentKind)) return;
+
+    // Если parent.kind не входит в allowedParents, вложение запрещено.
+    throw new BadRequestException(
+      `Container kind "${nodeKind}" is not allowed inside "${parentKind}" by rule "${rule.name}"`,
+    );
   }
 }

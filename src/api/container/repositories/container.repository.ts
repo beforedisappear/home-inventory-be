@@ -18,17 +18,15 @@ export class ContainerRepository {
   }
 
   findByOwner(ownerId: string) {
-    return this.containerModel.find({ owner: ownerId }).exec();
+    return this.containerModel.find({ ownerId }).exec();
   }
 
   findChildrenByOwner(ownerId: string, parentId: string | null) {
-    return this.containerModel
-      .find({ owner: ownerId, parent: parentId })
-      .exec();
+    return this.containerModel.find({ ownerId, parentId }).exec();
   }
 
   countChildren(parentId: string) {
-    return this.containerModel.countDocuments({ parent: parentId }).exec();
+    return this.containerModel.countDocuments({ parentId }).exec();
   }
 
   /**
@@ -47,7 +45,7 @@ export class ContainerRepository {
           from: this.containerModel.collection.name,
           startWith: '$_id', // начинаем с _id текущего документа
           connectFromField: '_id', // берём _id каждого найденного документа
-          connectToField: 'parent', //  ищем документы где parent === этому _id
+          connectToField: 'parentId', // ищем документы где parentId === этому _id
           as: 'descendants', //  результат кладём в массив descendants
         },
       },
@@ -58,13 +56,14 @@ export class ContainerRepository {
     return (result || []).ids.map((id) => id.toString());
   }
 
-  create(owner: string, dto: CreateContainerDto) {
+  create(ownerId: string, dto: CreateContainerDto, rootId?: string) {
     return this.containerModel.create({
-      owner,
+      ownerId,
       name: dto.name,
       kind: dto.kind ?? null,
-      parent: dto.parentId ?? null,
-      rule: dto.ruleId ?? null,
+      parentId: dto.parentId ?? null,
+      rootId: rootId ?? null,
+      ruleId: dto.ruleId ?? null,
     });
   }
 
@@ -72,15 +71,9 @@ export class ContainerRepository {
     return this.containerModel.findByIdAndUpdate(id, dto, { new: true }).exec();
   }
 
-  updateParent(id: string, parent: string) {
+  updateParent(id: string, parentId: string) {
     return this.containerModel
-      .findByIdAndUpdate(id, { parent }, { new: true })
-      .exec();
-  }
-
-  setRuleOnIds(ids: string[], rule: string | null) {
-    return this.containerModel
-      .updateMany({ _id: { $in: ids } }, { rule })
+      .findByIdAndUpdate(id, { parentId }, { new: true })
       .exec();
   }
 

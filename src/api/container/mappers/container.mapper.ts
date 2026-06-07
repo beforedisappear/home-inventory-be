@@ -7,8 +7,9 @@ export class ContainerMapper {
       id: с._id.toString(),
       name: с.name,
       kind: с.kind,
-      parent: с.parent?.toString() ?? null,
-      rule: с.rule?.toString() ?? null,
+      parentId: с.parentId?.toString() ?? null,
+      rootId: с.rootId?.toString() ?? null,
+      ruleId: с.ruleId?.toString() ?? null,
       createdAt: с.createdAt,
       updatedAt: с.updatedAt,
     };

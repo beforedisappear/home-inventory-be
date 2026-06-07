@@ -30,7 +30,7 @@ export class ContainerController {
     @UserId() userId: string,
     @Query() query: ListContainersQueryDto,
   ) {
-    return this.containerService.findChildren(userId, query.parent ?? null);
+    return this.containerService.findChildren(userId, query.parentId ?? null);
   }
 
   @ApiOperation({ summary: 'Получить контейнер по id' })

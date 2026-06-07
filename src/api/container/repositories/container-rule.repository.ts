@@ -9,7 +9,7 @@ import {
 import { KindRule } from '../schemas/kind-rule.schema';
 
 export interface CreateContainerRuleData {
-  owner: string;
+  ownerId: string;
   name: string;
   kindRules: KindRule[];
 }
@@ -22,11 +22,11 @@ export class ContainerRuleRepository {
   ) {}
 
   findByIdAndOwner(id: string, ownerId: string) {
-    return this.model.findOne({ _id: id, owner: ownerId }).exec();
+    return this.model.findOne({ _id: id, ownerId }).exec();
   }
 
   findByOwner(ownerId: string) {
-    return this.model.find({ owner: ownerId }).exec();
+    return this.model.find({ ownerId }).exec();
   }
 
   create(data: CreateContainerRuleData) {
@@ -36,7 +36,7 @@ export class ContainerRuleRepository {
   upsert(data: CreateContainerRuleData) {
     return this.model
       .findOneAndUpdate(
-        { owner: data.owner, name: data.name },
+        { ownerId: data.ownerId, name: data.name },
         { $setOnInsert: data },
         { upsert: true, new: true, setDefaultsOnInsert: true },
       )
