@@ -1,6 +1,6 @@
 import type { KindRule } from '../schemas/kind-rule.schema';
 
-/** Имя дефолтного правила, которое автосоздаётся для нового юзера */
+/** Имя базового системного правила, которое сидится в БД */
 export const DEFAULT_RULE_NAME = 'Стандарт';
 
 /**
@@ -12,8 +12,7 @@ export const DEFAULT_RULE_NAME = 'Стандарт';
  *           ├ box (в drawer или в другой box)
  *           └ bag (в drawer, box или в другой bag)
  *
- *  Если юзеру нужна свобода — создаёт своё кастомное правило и применяет к
- *  нужному root-контейнеру.
+ *  Если юзеру нужна свобода — создаёт своё кастомное правило.
  */
 export function buildDefaultKindRules(): KindRule[] {
   return [

@@ -8,6 +8,7 @@ import { ContainerService } from './services/container.service';
 import { ContainerController } from './controllers/container.controller';
 import { ContainerRepository } from './repositories/container.repository';
 import { ContainerRuleService } from './services/container-rule.service';
+import { ContainerRuleSeedService } from './services/container-rule-seed.service';
 import { ContainerRuleController } from './controllers/container-rule.controller';
 import { ContainerRuleRepository } from './repositories/container-rule.repository';
 
@@ -31,6 +32,7 @@ import {
     ContainerService,
     ContainerRepository,
     ContainerRuleService,
+    ContainerRuleSeedService,
     ContainerRuleRepository,
   ],
 })

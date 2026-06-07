@@ -9,28 +9,13 @@ import { ContainerRuleRepository } from '../repositories/container-rule.reposito
 import { CreateContainerRuleDto } from '../dto/create-container-rule.dto';
 import { ContainerRuleMapper } from '../mappers/container-rule.mapper';
 import type { ContainerRuleDocument } from '../schemas/container-rule.schema';
-import {
-  DEFAULT_RULE_NAME,
-  buildDefaultKindRules,
-} from '../constants/default-rule';
 
 @Injectable()
 export class ContainerRuleService {
   constructor(private readonly repo: ContainerRuleRepository) {}
 
   async findByOwner(ownerId: string) {
-    let rules = await this.repo.findByOwner(ownerId);
-
-    // Bootstrap: если у юзера ни одного правила — атомарно создаём дефолтное.
-    // upsert безопасен относительно concurrent-запросов: второй просто увидит готовый док.
-    if (rules.length === 0) {
-      await this.repo.upsert({
-        ownerId,
-        name: DEFAULT_RULE_NAME,
-        kindRules: buildDefaultKindRules(),
-      });
-      rules = await this.repo.findByOwner(ownerId);
-    }
+    const rules = await this.repo.findByOwner(ownerId);
 
     return rules.map((r) => ContainerRuleMapper.toResponseDto(r));
   }

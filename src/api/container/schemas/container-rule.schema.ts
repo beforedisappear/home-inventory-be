@@ -14,8 +14,9 @@ export type ContainerRuleDocument = TimestampedDocument<ContainerRule>;
  */
 @Schema({ timestamps: true })
 export class ContainerRule {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  ownerId: Types.ObjectId;
+  // null = системный rule из seed, ObjectId = кастомный rule юзера
+  @Prop({ type: Types.ObjectId, ref: 'User', default: null })
+  ownerId: Types.ObjectId | null;
 
   @Prop({ required: true, trim: true, minlength: 1, maxlength: 128 })
   name: string;
