@@ -23,14 +23,14 @@ export class AuthController {
     return this.authService.authenticate(dto);
   }
 
-  @ApiOperation({ summary: 'Обновить пару токенов по refresh-токену' })
+  @ApiOperation({ summary: 'Обновить пару токенов' })
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
   refreshTokens(@Body() dto: RefreshTokenDto) {
     return this.authService.refreshTokens(dto);
   }
 
-  @ApiOperation({ summary: 'Выйти — блэклистит refresh-токен' })
+  @ApiOperation({ summary: 'Выйти из системы' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('logout')
   logout(@Body() dto: RefreshTokenDto) {

@@ -12,19 +12,19 @@ import { CreateContainerRuleDto } from '../dto/create-container-rule.dto';
 export class ContainerRuleController {
   constructor(private readonly service: ContainerRuleService) {}
 
-  @ApiOperation({ summary: 'Список правил' })
+  @ApiOperation({ summary: 'Список доступных правил для контейнера' })
   @Get()
   findAll(@UserId() userId: string) {
     return this.service.findByOwner(userId);
   }
 
-  @ApiOperation({ summary: 'Получить правило по id' })
+  @ApiOperation({ summary: 'Получить правило контейнера по id' })
   @Get(':id')
   findById(@UserId() userId: string, @Param('id') id: string) {
     return this.service.findById(userId, id);
   }
 
-  @ApiOperation({ summary: 'Создать новое правило' })
+  @ApiOperation({ summary: 'Создать новое правило контейнера' })
   @Post()
   create(@UserId() userId: string, @Body() dto: CreateContainerRuleDto) {
     return this.service.create(userId, dto);
