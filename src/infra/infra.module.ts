@@ -3,12 +3,13 @@ import { Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
 import { RedisModule } from './redis/redis.module';
 import { QueueModule } from './queue/queue.module';
+import { LoggerModule } from './logger/logger.module';
 
 /**
  *  Модуль - агрегатор низкоуровневой инфраструктуры (глобальный)
  */
 @Module({
-  imports: [DatabaseModule, RedisModule, QueueModule],
+  imports: [DatabaseModule, RedisModule, QueueModule, LoggerModule],
   exports: [DatabaseModule, RedisModule, QueueModule],
 })
 export class InfraModule {}

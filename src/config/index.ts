@@ -6,3 +6,4 @@ export { getMailConfig } from './mail.config';
 export { getBullConfig } from './bull.config';
 export { getSwaggerConfig } from './swagger.config';
 export { getJwtConfig } from './jwt.config';
+export { getWinstonConfig } from './winston.config';
