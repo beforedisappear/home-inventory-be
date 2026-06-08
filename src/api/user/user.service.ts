@@ -7,7 +7,7 @@ import {
 
 import { RedisService } from '@/infra/redis/redis.service';
 import { MailService } from '@/libs/mail/mail.service';
-import { SentResponseDto } from '@/shared/dto';
+import { SentResponseDto } from './dto/sent-response.dto';
 
 import { UserRepository } from './user.repository';
 import {

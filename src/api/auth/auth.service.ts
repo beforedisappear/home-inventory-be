@@ -9,7 +9,7 @@ import { randomUUID } from 'crypto';
 
 import { RedisService } from '@/infra/redis/redis.service';
 import { UserService } from '@/api/user/user.service';
-import { SentResponseDto } from '@/shared/dto';
+import { SentResponseDto } from './dto/sent-response.dto';
 
 import {
   LoginDto,
