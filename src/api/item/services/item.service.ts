@@ -110,7 +110,7 @@ export class ItemService {
   ): Promise<ItemPhotoResponseDto> {
     if (!file) throw new BadRequestException('file is required');
 
-    const key = `${userStoragePrefix(ownerId)}${uuidv4()}-${file.originalname}`;
+    const key = `${userStoragePrefix(ownerId)}${uuidv4()}`;
 
     await this.storage.upload(key, file);
 
