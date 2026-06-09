@@ -9,6 +9,7 @@ export class ItemMapper {
     return {
       id: doc._id.toString(),
       containerId: doc.containerId.toString(),
+      categoryId: doc.categoryId?.toString() ?? null,
       name: doc.name,
       quantity: doc.quantity,
       description: doc.description,

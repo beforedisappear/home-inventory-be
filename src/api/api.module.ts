@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AuthModule } from './auth/auth.module';
+import { CategoryModule } from './category/category.module';
 import { ContainerModule } from './container/container.module';
 import { ItemModule } from './item/item.module';
 import { UserModule } from './user/user.module';
@@ -10,7 +11,13 @@ import { UserModule } from './user/user.module';
  */
 @Module({
   controllers: [],
-  imports: [AuthModule, UserModule, ContainerModule, ItemModule],
+  imports: [
+    AuthModule,
+    UserModule,
+    ContainerModule,
+    ItemModule,
+    CategoryModule,
+  ],
   providers: [],
 })
 export class ApiModule {}

@@ -19,6 +19,10 @@ export class ItemResponseDto {
   @IsMongoId()
   containerId: string;
 
+  @IsOptional()
+  @IsMongoId()
+  categoryId: string | null;
+
   @IsString()
   name: string;
 

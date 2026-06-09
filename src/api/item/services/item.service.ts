@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import { CategoryService } from '@/api/category/services/category.service';
 import { ContainerService } from '@/api/container/services/container.service';
 import { StorageService } from '@/libs/storage/storage.service';
 
@@ -25,16 +26,29 @@ export class ItemService {
 
     @Inject(forwardRef(() => ContainerService))
     private readonly containerService: ContainerService,
+
+    @Inject(forwardRef(() => CategoryService))
+    private readonly categoryService: CategoryService,
   ) {}
 
   existsByContainer(containerId: string) {
     return this.repo.existsByContainer(containerId);
   }
 
-  async findByContainer(ownerId: string, query: ListItemsQueryDto) {
-    await this.containerService.findById(ownerId, query.containerId);
+  unsetCategoryFromAll(categoryId: string) {
+    return this.repo.unsetCategoryFromAll(categoryId);
+  }
 
-    const items = await this.repo.findByContainer(ownerId, query.containerId);
+  async findAll(ownerId: string, query: ListItemsQueryDto) {
+    if (query.containerId) {
+      await this.containerService.findById(ownerId, query.containerId);
+    }
+
+    if (query.categoryId) {
+      await this.categoryService.assertExists(query.categoryId);
+    }
+
+    const items = await this.repo.findAll(ownerId, query);
 
     return items.map((i) => ItemMapper.toResponseDto(i, this.storage.buildUrl));
   }
@@ -49,6 +63,10 @@ export class ItemService {
 
   async create(ownerId: string, dto: CreateItemDto) {
     await this.containerService.findById(ownerId, dto.containerId);
+
+    if (dto.categoryId) {
+      await this.categoryService.assertExists(dto.categoryId);
+    }
 
     const { photos: photoKeys, ...rest } = dto;
 
@@ -69,6 +87,10 @@ export class ItemService {
 
     if (dto.containerId) {
       await this.containerService.findById(ownerId, dto.containerId);
+    }
+
+    if (dto.categoryId) {
+      await this.categoryService.assertExists(dto.categoryId);
     }
 
     const { photos: photoKeys, ...rest } = dto;

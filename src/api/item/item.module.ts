@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { BullBoardModule } from '@bull-board/nestjs';
 
+import { CategoryModule } from '@/api/category/category.module';
 import { ContainerModule } from '@/api/container/container.module';
 import { InfraModule } from '@/infra/infra.module';
 import { LibsModule } from '@/libs/libs.module';
@@ -23,6 +24,7 @@ import { ItemService } from './services/item.service';
     InfraModule,
     LibsModule,
     forwardRef(() => ContainerModule),
+    forwardRef(() => CategoryModule),
     BullModule.registerQueue({ name: ITEM_PHOTO_QUEUE }),
     BullBoardModule.forFeature({
       name: ITEM_PHOTO_QUEUE,

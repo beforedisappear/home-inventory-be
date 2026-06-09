@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
+
+import { escapeRegex } from '@/shared/utils/escape-regex';
 
 import { CreateItemData, UpdateItemData } from '../interfaces';
+import { ItemFiltersData } from '../interfaces/item-filters-data';
 import { Item, ItemDocument } from '../schemas/item.schema';
 
 @Injectable()
@@ -17,12 +20,22 @@ export class ItemRepository {
     return this.model.findOne({ _id: id, ownerId }).exec();
   }
 
-  findByContainer(ownerId: string, containerId: string) {
-    return this.model.find({ ownerId, containerId }).exec();
+  findAll(ownerId: string, filters: ItemFiltersData) {
+    const query: FilterQuery<ItemDocument> = { ownerId };
+
+    if (filters.containerId) query.containerId = filters.containerId;
+    if (filters.categoryId) query.categoryId = filters.categoryId;
+    if (filters.q) {
+      const rx = new RegExp(escapeRegex(filters.q), 'i');
+      query.$or = [{ name: rx }, { description: rx }];
+    }
+
+    return this.model.find(query).sort({ createdAt: -1 }).exec();
   }
 
   async existsByContainer(containerId: string): Promise<boolean> {
     const found = await this.model.exists({ containerId });
+
     return found !== null;
   }
 
@@ -44,6 +57,12 @@ export class ItemRepository {
         { 'photos.key': photoKey },
         { $set: { 'photos.$.size': size } },
       )
+      .exec();
+  }
+
+  unsetCategoryFromAll(categoryId: string) {
+    return this.model
+      .updateMany({ categoryId }, { $set: { categoryId: null } })
       .exec();
   }
 }

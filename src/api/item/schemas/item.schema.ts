@@ -22,6 +22,15 @@ export class Item {
   })
   containerId: Types.ObjectId;
 
+  // index — для фильтрации items по категории и cascade unset при удалении категории
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'Category',
+    default: null,
+    index: true,
+  })
+  categoryId: Types.ObjectId | null;
+
   @Prop({ required: true, trim: true, minlength: 1, maxlength: 256 })
   name: string;
 

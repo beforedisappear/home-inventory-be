@@ -14,6 +14,10 @@ export class CreateItemDto {
   @IsMongoId()
   containerId: string;
 
+  @IsOptional()
+  @IsMongoId()
+  categoryId?: string;
+
   @IsString()
   @MinLength(1)
   @MaxLength(256)

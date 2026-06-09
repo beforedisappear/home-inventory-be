@@ -105,6 +105,7 @@ export class ContainerService {
     await this.findById(ownerId, id);
 
     const updated = await this.repo.update(id, dto);
+
     return ContainerMapper.toResponseDto(updated!);
   }
 

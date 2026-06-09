@@ -30,10 +30,14 @@ export class ItemController {
     private readonly itemPhotoService: ItemPhotoService,
   ) {}
 
-  @ApiOperation({ summary: 'Список вещей в контейнере' })
+  @ApiOperation({
+    summary: 'Список вещей с фильтрами и поиском',
+    description:
+      'Все параметры опциональны. q — substring по name+description (case-insensitive).',
+  })
   @Get()
-  findByContainer(@UserId() userId: string, @Query() query: ListItemsQueryDto) {
-    return this.itemService.findByContainer(userId, query);
+  findAll(@UserId() userId: string, @Query() query: ListItemsQueryDto) {
+    return this.itemService.findAll(userId, query);
   }
 
   @ApiOperation({ summary: 'Получить вещь по id' })
