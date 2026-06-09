@@ -8,20 +8,20 @@ import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 
 import { RedisService } from '@/infra/redis/redis.service';
-import { UserService } from '@/api/user/user.service';
-import { SentResponseDto } from './dto/sent-response.dto';
+import { UserService } from '@/api/user/services/user.service';
+import { SentResponseDto } from '../dto/sent-response.dto';
 
 import {
   LoginDto,
   AuthenticateDto,
   RefreshTokenDto,
   AuthTokenPairDto,
-} from './dto';
+} from '../dto';
 import {
   AUTH_REFRESH_JWT_KIND,
   AccessJwtPayload,
   RefreshJwtPayload,
-} from './interfaces';
+} from '../interfaces';
 import { MailService } from '@/libs/mail/mail.service';
 
 const EMAIL_CODE_TTL_SEC = 15 * 60;

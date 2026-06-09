@@ -7,17 +7,17 @@ import {
 
 import { RedisService } from '@/infra/redis/redis.service';
 import { MailService } from '@/libs/mail/mail.service';
-import { SentResponseDto } from './dto/sent-response.dto';
+import { SentResponseDto } from '../dto/sent-response.dto';
 
-import { UserRepository } from './user.repository';
+import { UserRepository } from '../repositories/user.repository';
 import {
   CreateUserDto,
   UpdateUserDto,
   RequestEmailChangeDto,
   ConfirmEmailChangeDto,
-} from './dto';
-import type { EmailChangePayload } from './interfaces';
-import { UserMapper } from './mappers/user.mapper';
+} from '../dto';
+import type { EmailChangePayload } from '../interfaces';
+import { UserMapper } from '../mappers/user.mapper';
 
 const EMAIL_CHANGE_TTL_SEC = 15 * 60;
 
@@ -39,6 +39,7 @@ export class UserService {
 
   async findByEmail(email: string) {
     const user = await this.userRepository.findByEmail(email);
+
     return user ? UserMapper.toResponseDto(user) : null;
   }
 

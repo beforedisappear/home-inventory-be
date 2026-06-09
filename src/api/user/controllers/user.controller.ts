@@ -11,12 +11,12 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { UserId, Authorized } from '@/shared/decorators';
 
-import { UserService } from './user.service';
+import { UserService } from '../services/user.service';
 import {
   UpdateUserDto,
   RequestEmailChangeDto,
   ConfirmEmailChangeDto,
-} from './dto';
+} from '../dto';
 
 @ApiTags('Users')
 @Authorized()

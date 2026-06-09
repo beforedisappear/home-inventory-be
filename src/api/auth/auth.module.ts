@@ -8,8 +8,8 @@ import { UserModule } from '@/api/user/user.module';
 import { InfraModule } from '@/infra/infra.module';
 import { LibsModule } from '@/libs/libs.module';
 
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { AuthService } from './services/auth.service';
+import { AuthController } from './controllers/auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
