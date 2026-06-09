@@ -1,10 +1,14 @@
 import {
   BadRequestException,
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
+
+import { ItemService } from '@/api/item/services/item.service';
 
 import { ContainerRepository } from '../repositories/container.repository';
 import { ContainerRuleService } from './container-rule.service';
@@ -20,6 +24,9 @@ export class ContainerService {
   constructor(
     private readonly repo: ContainerRepository,
     private readonly ruleService: ContainerRuleService,
+    // forwardRef из-за circular dep: ItemService инжектит ContainerService
+    @Inject(forwardRef(() => ItemService))
+    private readonly itemService: ItemService,
   ) {}
 
   /** Прямые дети уровня. parentId === null → root-контейнеры */
@@ -115,7 +122,10 @@ export class ContainerService {
         `Container has ${childrenCount} child container(s)`,
       );
 
-    // TODO: когда добавим Item, дополнительно проверять что Item.find({ container: id }).count() === 0
+    const hasItems = await this.itemService.existsByContainer(id);
+
+    if (hasItems)
+      throw new ConflictException('Container is not empty (has items)');
 
     await this.repo.delete(id);
 

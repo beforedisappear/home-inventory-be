@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { LibsModule } from '@/libs/libs.module';
 import { InfraModule } from '@/infra/infra.module';
+import { ItemModule } from '@/api/item/item.module';
 
 import { ContainerService } from './services/container.service';
 import { ContainerController } from './controllers/container.controller';
@@ -26,6 +27,7 @@ import {
     ]),
     InfraModule,
     LibsModule,
+    forwardRef(() => ItemModule),
   ],
   controllers: [ContainerController, ContainerRuleController],
   providers: [
@@ -35,5 +37,6 @@ import {
     ContainerRuleSeedService,
     ContainerRuleRepository,
   ],
+  exports: [ContainerService],
 })
 export class ContainerModule {}
