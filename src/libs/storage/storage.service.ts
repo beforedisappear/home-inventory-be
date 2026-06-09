@@ -55,7 +55,7 @@ export class StorageService {
     );
   }
 
-  buildUrl(key: string): string {
+  buildUrl = (key: string): string => {
     return `${this.viewDomain}/${this.bucket}/${key}`;
-  }
+  };
 }

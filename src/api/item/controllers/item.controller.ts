@@ -7,8 +7,11 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { Authorized, UserId } from '@/shared/decorators';
 
@@ -39,6 +42,23 @@ export class ItemController {
   @Post()
   create(@UserId() userId: string, @Body() dto: CreateItemDto) {
     return this.itemService.create(userId, dto);
+  }
+
+  @ApiOperation({ summary: 'Загрузить фото' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
+  @Post('photo')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadPhoto(
+    @UserId() userId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.itemService.uploadPhoto(userId, file);
   }
 
   @ApiOperation({ summary: 'Обновить вещь' })

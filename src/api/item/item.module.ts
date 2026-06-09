@@ -1,5 +1,4 @@
 import { forwardRef, Module } from '@nestjs/common';
-
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { InfraModule } from '@/infra/infra.module';

@@ -3,8 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Item, ItemDocument } from '../schemas/item.schema';
+import { ItemPhoto } from '../schemas/item-photo.schema';
 import { CreateItemDto } from '../dto/create-item.dto';
-import { UpdateItemDto } from '../dto/update-item.dto';
+
+export interface UpdateItemData {
+  name?: string;
+  quantity?: number;
+  description?: string;
+  containerId?: string;
+  photos?: ItemPhoto[];
+}
 
 @Injectable()
 export class ItemRepository {
@@ -23,7 +31,6 @@ export class ItemRepository {
 
   async existsByContainer(containerId: string): Promise<boolean> {
     const found = await this.model.exists({ containerId });
-
     return found !== null;
   }
 
@@ -37,8 +44,8 @@ export class ItemRepository {
     });
   }
 
-  update(id: string, dto: UpdateItemDto) {
-    return this.model.findByIdAndUpdate(id, dto, { new: true }).exec();
+  update(id: string, data: UpdateItemData) {
+    return this.model.findByIdAndUpdate(id, data, { new: true }).exec();
   }
 
   delete(id: string) {

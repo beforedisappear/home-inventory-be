@@ -3,6 +3,8 @@ import { Types } from 'mongoose';
 
 import type { TimestampedDocument } from '@/shared/types/mongo';
 
+import { ItemPhoto, ItemPhotoSchema } from './item-photo.schema';
+
 export type ItemDocument = TimestampedDocument<Item>;
 
 @Schema({ timestamps: true })
@@ -27,6 +29,10 @@ export class Item {
 
   @Prop({ trim: true, maxlength: 2048 })
   description?: string;
+
+  // wrapper-subdocs со ссылками на File. Порядок сохраняется (как добавили).
+  @Prop({ type: [ItemPhotoSchema], default: [] })
+  photos: ItemPhoto[];
 }
 
 export const ItemSchema = SchemaFactory.createForClass(Item);

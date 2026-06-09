@@ -75,10 +75,13 @@ export class RedisService {
   // перезапись всего hash атомарно: DEL + HSET в одной транзакции
   async hreplace(key: string, entries: Record<string, string | number>) {
     const pipeline = this.redis.multi();
+
     pipeline.del(key);
+
     if (Object.keys(entries).length > 0) {
       pipeline.hset(key, entries);
     }
+
     await pipeline.exec();
   }
 
