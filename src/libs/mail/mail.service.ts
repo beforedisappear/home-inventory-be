@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { MailerService } from '@nestjs-modules/mailer';
 
 export interface SendMailParams {

@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import {
   Injectable,
   InternalServerErrorException,
@@ -5,24 +7,23 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { randomUUID } from 'crypto';
 
-import { RedisService } from '@/infra/redis/redis.service';
 import { UserService } from '@/api/user/services/user.service';
-import { SentResponseDto } from '../dto/sent-response.dto';
+import { RedisService } from '@/infra/redis/redis.service';
+import { MailService } from '@/libs/mail/mail.service';
 
 import {
-  LoginDto,
   AuthenticateDto,
-  RefreshTokenDto,
   AuthTokenPairDto,
+  LoginDto,
+  RefreshTokenDto,
 } from '../dto';
+import { SentResponseDto } from '../dto/sent-response.dto';
 import {
-  AUTH_REFRESH_JWT_KIND,
   AccessJwtPayload,
+  AUTH_REFRESH_JWT_KIND,
   RefreshJwtPayload,
 } from '../interfaces';
-import { MailService } from '@/libs/mail/mail.service';
 
 const EMAIL_CODE_TTL_SEC = 15 * 60;
 

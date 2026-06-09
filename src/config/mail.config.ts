@@ -1,5 +1,7 @@
 import { join } from 'node:path';
+
 import type { ConfigService } from '@nestjs/config';
+
 import type { MailerOptions } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/adapters/handlebars.adapter';
 

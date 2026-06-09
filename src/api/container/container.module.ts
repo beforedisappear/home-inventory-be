@@ -1,23 +1,22 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { LibsModule } from '@/libs/libs.module';
-import { InfraModule } from '@/infra/infra.module';
 import { ItemModule } from '@/api/item/item.module';
+import { InfraModule } from '@/infra/infra.module';
+import { LibsModule } from '@/libs/libs.module';
 
-import { ContainerService } from './services/container.service';
-import { ContainerController } from './controllers/container.controller';
-import { ContainerRepository } from './repositories/container.repository';
-import { ContainerRuleService } from './services/container-rule.service';
-import { ContainerRuleSeedService } from './services/container-rule-seed.service';
 import { ContainerRuleController } from './controllers/container-rule.controller';
+import { ContainerController } from './controllers/container.controller';
 import { ContainerRuleRepository } from './repositories/container-rule.repository';
-
-import { Container, ContainerSchema } from './schemas/container.schema';
+import { ContainerRepository } from './repositories/container.repository';
 import {
   ContainerRule,
   ContainerRuleSchema,
 } from './schemas/container-rule.schema';
+import { Container, ContainerSchema } from './schemas/container.schema';
+import { ContainerRuleSeedService } from './services/container-rule-seed.service';
+import { ContainerRuleService } from './services/container-rule.service';
+import { ContainerService } from './services/container.service';
 
 @Module({
   imports: [

@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+
 import { Types } from 'mongoose';
 
 import type { TimestampedDocument } from '@/shared/types/mongo';

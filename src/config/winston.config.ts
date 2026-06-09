@@ -1,5 +1,5 @@
-import * as winston from 'winston';
 import { utilities, type WinstonModuleOptions } from 'nest-winston';
+import * as winston from 'winston';
 
 export function getWinstonConfig(): WinstonModuleOptions {
   const isProduction = process.env.NODE_ENV === 'production';

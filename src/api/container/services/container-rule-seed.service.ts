@@ -1,10 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 
-import { ContainerRuleRepository } from '../repositories/container-rule.repository';
 import {
-  DEFAULT_RULE_NAME,
   buildDefaultKindRules,
+  DEFAULT_RULE_NAME,
 } from '../constants/default-rule';
+import { ContainerRuleRepository } from '../repositories/container-rule.repository';
 
 @Injectable()
 export class ContainerRuleSeedService implements OnModuleInit {

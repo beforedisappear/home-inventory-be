@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDate,
@@ -8,7 +9,6 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 import { ItemPhotoResponseDto } from './item-photo-response.dto';
 

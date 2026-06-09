@@ -1,5 +1,5 @@
-import { ContainerRuleDocument } from '../schemas/container-rule.schema';
 import { ContainerRuleResponseDto } from '../dto/container-rule-response.dto';
+import { ContainerRuleDocument } from '../schemas/container-rule.schema';
 
 export class ContainerRuleMapper {
   static toResponseDto(doc: ContainerRuleDocument): ContainerRuleResponseDto {

@@ -3,8 +3,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { Authorized, UserId } from '@/shared/decorators';
 
-import { ContainerRuleService } from '../services/container-rule.service';
 import { CreateContainerRuleDto } from '../dto/create-container-rule.dto';
+import { ContainerRuleService } from '../services/container-rule.service';
 
 @ApiTags('Container Rules')
 @Authorized()

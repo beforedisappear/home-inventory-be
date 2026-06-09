@@ -1,5 +1,5 @@
-import type { ConfigService } from '@nestjs/config';
 import type { BullRootModuleOptions } from '@nestjs/bullmq';
+import type { ConfigService } from '@nestjs/config';
 
 export function getBullConfig(
   configService: ConfigService,

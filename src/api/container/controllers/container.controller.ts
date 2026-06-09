@@ -12,11 +12,11 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { Authorized, UserId } from '@/shared/decorators';
 
-import { ContainerService } from '../services/container.service';
 import { CreateContainerDto } from '../dto/create-container.dto';
-import { UpdateContainerDto } from '../dto/update-container.dto';
-import { MoveContainerDto } from '../dto/move-container.dto';
 import { ListContainersQueryDto } from '../dto/list-containers-query.dto';
+import { MoveContainerDto } from '../dto/move-container.dto';
+import { UpdateContainerDto } from '../dto/update-container.dto';
+import { ContainerService } from '../services/container.service';
 
 @ApiTags('Containers')
 @Authorized()

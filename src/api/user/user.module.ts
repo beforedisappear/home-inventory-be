@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { UserService } from './services/user.service';
+import { InfraModule } from '@/infra/infra.module';
+import { LibsModule } from '@/libs/libs.module';
+
 import { UserController } from './controllers/user.controller';
 import { UserRepository } from './repositories/user.repository';
 import { User, UserSchema } from './schemas/user.schema';
-import { LibsModule } from '@/libs/libs.module';
-import { InfraModule } from '@/infra/infra.module';
+import { UserService } from './services/user.service';
 
 @Module({
   imports: [

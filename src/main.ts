@@ -1,13 +1,15 @@
-import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
+
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
-import { AppModule } from './app.module';
 import { getCorsConfig, getValidationPipeConfig } from '@/config';
-import { setupSwagger } from '@/shared/utils/swagger';
 import { QUEUES_ROUTE } from '@/shared/constants/routes';
+import { setupSwagger } from '@/shared/utils/swagger';
+
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {

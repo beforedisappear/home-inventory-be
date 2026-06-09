@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
-import { BullBoardModule } from '@bull-board/nestjs';
-import { ExpressAdapter } from '@bull-board/express';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
+import { ExpressAdapter } from '@bull-board/express';
+import { BullBoardModule } from '@bull-board/nestjs';
 
 import { getBullConfig } from '@/config';
 import { QUEUES_ROUTE } from '@/shared/constants/routes';

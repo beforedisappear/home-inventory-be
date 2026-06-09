@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -6,7 +7,6 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 import { KindRuleDto } from './kind-rule.dto';
 

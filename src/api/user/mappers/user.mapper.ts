@@ -1,5 +1,5 @@
-import { UserDocument } from '../schemas/user.schema';
 import { UserResponseDto } from '../dto/user-response.dto';
+import { UserDocument } from '../schemas/user.schema';
 
 export class UserMapper {
   static toResponseDto(user: UserDocument): UserResponseDto {

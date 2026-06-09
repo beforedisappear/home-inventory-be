@@ -1,19 +1,20 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
+import { BadRequestException, Injectable } from '@nestjs/common';
+
 import { Queue } from 'bullmq';
 import { v4 as uuidv4 } from 'uuid';
 
 import { StorageService } from '@/libs/storage/storage.service';
 
-import { ItemPhoto } from '../schemas/item-photo.schema';
-import { ItemPhotoResponseDto } from '../dto/item-photo-response.dto';
-import { userStoragePrefix } from '../constants/storage-keys';
 import { ITEM_PHOTO_MIME_TO_EXT, ItemPhotoMime } from '../constants/item-photo';
 import {
   ITEM_PHOTO_COMPRESS_JOB,
   ITEM_PHOTO_QUEUE,
   ItemPhotoCompressJobData,
 } from '../constants/item-photo-queue';
+import { userStoragePrefix } from '../constants/storage-keys';
+import { ItemPhotoResponseDto } from '../dto/item-photo-response.dto';
+import { ItemPhoto } from '../schemas/item-photo.schema';
 
 @Injectable()
 export class ItemPhotoService {
@@ -63,6 +64,7 @@ export class ItemPhotoService {
     const removed = existing
       .filter((p) => !nextSet.has(p.key))
       .map((p) => p.key);
+
     await this.deleteFromStorage(removed);
 
     return Promise.all(

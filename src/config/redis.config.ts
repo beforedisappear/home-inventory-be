@@ -1,4 +1,5 @@
 import type { ConfigService } from '@nestjs/config';
+
 import type { RedisModuleOptions } from '@nestjs-modules/ioredis';
 
 export function getRedisConfig(

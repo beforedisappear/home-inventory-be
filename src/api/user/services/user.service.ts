@@ -1,23 +1,23 @@
 import {
+  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
-  ConflictException,
-  BadRequestException,
 } from '@nestjs/common';
 
 import { RedisService } from '@/infra/redis/redis.service';
 import { MailService } from '@/libs/mail/mail.service';
-import { SentResponseDto } from '../dto/sent-response.dto';
 
-import { UserRepository } from '../repositories/user.repository';
 import {
-  CreateUserDto,
-  UpdateUserDto,
-  RequestEmailChangeDto,
   ConfirmEmailChangeDto,
+  CreateUserDto,
+  RequestEmailChangeDto,
+  UpdateUserDto,
 } from '../dto';
+import { SentResponseDto } from '../dto/sent-response.dto';
 import type { EmailChangePayload } from '../interfaces';
 import { UserMapper } from '../mappers/user.mapper';
+import { UserRepository } from '../repositories/user.repository';
 
 const EMAIL_CHANGE_TTL_SEC = 15 * 60;
 

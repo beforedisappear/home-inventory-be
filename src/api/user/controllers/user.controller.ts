@@ -9,14 +9,14 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { UserId, Authorized } from '@/shared/decorators';
+import { Authorized, UserId } from '@/shared/decorators';
 
-import { UserService } from '../services/user.service';
 import {
-  UpdateUserDto,
-  RequestEmailChangeDto,
   ConfirmEmailChangeDto,
+  RequestEmailChangeDto,
+  UpdateUserDto,
 } from '../dto';
+import { UserService } from '../services/user.service';
 
 @ApiTags('Users')
 @Authorized()

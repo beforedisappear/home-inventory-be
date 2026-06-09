@@ -1,17 +1,18 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
+
 import { Job } from 'bullmq';
 import sharp from 'sharp';
 
 import { StorageService } from '@/libs/storage/storage.service';
 
-import { ItemRepository } from '../repositories/item.repository';
+import { ItemPhotoMime } from '../constants/item-photo';
 import {
   ITEM_PHOTO_COMPRESS_JOB,
   ITEM_PHOTO_QUEUE,
   ItemPhotoCompressJobData,
 } from '../constants/item-photo-queue';
-import { ItemPhotoMime } from '../constants/item-photo';
+import { ItemRepository } from '../repositories/item.repository';
 
 @Processor(ITEM_PHOTO_QUEUE)
 export class ItemPhotoCompressProcessor extends WorkerHost {
