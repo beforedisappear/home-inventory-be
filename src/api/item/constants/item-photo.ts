@@ -2,8 +2,6 @@ export const ITEM_PHOTO_MIME_TO_EXT = {
   'image/jpeg': '.jpg',
   'image/png': '.png',
   'image/webp': '.webp',
-  'image/gif': '.gif',
-  'image/heic': '.heic',
 } as const;
 
 export type ItemPhotoMime = keyof typeof ITEM_PHOTO_MIME_TO_EXT;

@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   S3Client,
   DeleteObjectCommand,
+  GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
 } from '@aws-sdk/client-s3';
@@ -38,16 +39,33 @@ export class StorageService {
   }
 
   async upload(key: string, file: Express.Multer.File) {
+    await this.uploadBuffer(key, file.buffer, file.mimetype);
+    return this.buildUrl(key);
+  }
+
+  async uploadBuffer(key: string, buffer: Buffer, contentType: string) {
     await this.s3.send(
       new PutObjectCommand({
         Key: key,
         Bucket: this.bucket,
-        Body: file.buffer,
-        ContentType: file.mimetype,
+        Body: buffer,
+        ContentType: contentType,
       }),
     );
 
     return this.buildUrl(key);
+  }
+
+  async get(key: string): Promise<Buffer> {
+    const res = await this.s3.send(
+      new GetObjectCommand({ Bucket: this.bucket, Key: key }),
+    );
+
+    if (!res.Body) {
+      throw new Error(`storage.get: empty body for key ${key}`);
+    }
+
+    return Buffer.from(await res.Body.transformToByteArray());
   }
 
   async delete(key: string) {

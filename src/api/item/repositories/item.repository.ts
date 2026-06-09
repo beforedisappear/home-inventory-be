@@ -36,4 +36,13 @@ export class ItemRepository {
   delete(id: string) {
     return this.model.findByIdAndDelete(id).exec();
   }
+
+  updatePhotoSize(photoKey: string, size: number) {
+    return this.model
+      .updateOne(
+        { 'photos.key': photoKey },
+        { $set: { 'photos.$.size': size } },
+      )
+      .exec();
+  }
 }
