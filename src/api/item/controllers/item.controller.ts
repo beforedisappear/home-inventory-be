@@ -10,12 +10,13 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { Authorized, UserId } from '@/shared/decorators';
 
 import { ItemService } from '../services/item.service';
+import { ItemPhotoService } from '../services/item-photo.service';
+import { ItemPhotoFileInterceptor } from '../interceptors/item-photo-upload.interceptor';
 import { CreateItemDto } from '../dto/create-item.dto';
 import { UpdateItemDto } from '../dto/update-item.dto';
 import { ListItemsQueryDto } from '../dto/list-items-query.dto';
@@ -24,7 +25,10 @@ import { ListItemsQueryDto } from '../dto/list-items-query.dto';
 @Authorized()
 @Controller('items')
 export class ItemController {
-  constructor(private readonly itemService: ItemService) {}
+  constructor(
+    private readonly itemService: ItemService,
+    private readonly itemPhotoService: ItemPhotoService,
+  ) {}
 
   @ApiOperation({ summary: 'Список вещей в контейнере' })
   @Get()
@@ -53,12 +57,12 @@ export class ItemController {
     },
   })
   @Post('photo')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(ItemPhotoFileInterceptor())
   uploadPhoto(
     @UserId() userId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.itemService.uploadPhoto(userId, file);
+    return this.itemPhotoService.upload(userId, file);
   }
 
   @ApiOperation({ summary: 'Обновить вещь' })

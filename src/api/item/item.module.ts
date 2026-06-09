@@ -6,6 +6,7 @@ import { LibsModule } from '@/libs/libs.module';
 import { ContainerModule } from '@/api/container/container.module';
 import { ItemController } from './controllers/item.controller';
 import { ItemService } from './services/item.service';
+import { ItemPhotoService } from './services/item-photo.service';
 import { ItemRepository } from './repositories/item.repository';
 
 import { Item, ItemSchema } from './schemas/item.schema';
@@ -18,7 +19,7 @@ import { Item, ItemSchema } from './schemas/item.schema';
     forwardRef(() => ContainerModule),
   ],
   controllers: [ItemController],
-  providers: [ItemService, ItemRepository],
+  providers: [ItemService, ItemPhotoService, ItemRepository],
   exports: [ItemService],
 })
 export class ItemModule {}

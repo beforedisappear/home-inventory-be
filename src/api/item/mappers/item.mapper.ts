@@ -2,9 +2,6 @@ import { ItemDocument } from '../schemas/item.schema';
 import { ItemResponseDto } from '../dto/item-response.dto';
 
 export class ItemMapper {
-  /**
-   *  StorageService нужен для buildUrl(key) — url не хранится в БД.
-   */
   static toResponseDto(
     doc: ItemDocument,
     buildUrl: (key: string) => string,
