@@ -3,16 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Item, ItemDocument } from '../schemas/item.schema';
-import { ItemPhoto } from '../schemas/item-photo.schema';
-import { CreateItemDto } from '../dto/create-item.dto';
-
-export interface UpdateItemData {
-  name?: string;
-  quantity?: number;
-  description?: string;
-  containerId?: string;
-  photos?: ItemPhoto[];
-}
+import { CreateItemData, UpdateItemData } from '../interfaces';
 
 @Injectable()
 export class ItemRepository {
@@ -34,14 +25,8 @@ export class ItemRepository {
     return found !== null;
   }
 
-  create(ownerId: string, dto: CreateItemDto) {
-    return this.model.create({
-      ownerId,
-      containerId: dto.containerId,
-      name: dto.name,
-      quantity: dto.quantity ?? 1,
-      description: dto.description,
-    });
+  create(data: CreateItemData) {
+    return this.model.create(data);
   }
 
   update(id: string, data: UpdateItemData) {

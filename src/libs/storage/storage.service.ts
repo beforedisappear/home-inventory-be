@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   S3Client,
   DeleteObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
 } from '@aws-sdk/client-s3';
 
@@ -53,6 +54,17 @@ export class StorageService {
     return this.s3.send(
       new DeleteObjectCommand({ Bucket: this.bucket, Key: key }),
     );
+  }
+
+  async head(key: string): Promise<{ mimeType: string; size: number }> {
+    const res = await this.s3.send(
+      new HeadObjectCommand({ Bucket: this.bucket, Key: key }),
+    );
+
+    return {
+      mimeType: res.ContentType ?? 'application/octet-stream',
+      size: res.ContentLength ?? 0,
+    };
   }
 
   buildUrl = (key: string): string => {

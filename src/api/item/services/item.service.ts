@@ -5,19 +5,20 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+
+import { v4 as uuidv4 } from 'uuid';
 
 import { ContainerService } from '@/api/container/services/container.service';
 import { StorageService } from '@/libs/storage/storage.service';
 
-import {
-  ItemRepository,
-  UpdateItemData,
-} from '../repositories/item.repository';
+import { ItemRepository } from '../repositories/item.repository';
+import { CreateItemData, UpdateItemData } from '../interfaces';
+import { userStoragePrefix } from '../constants/storage-keys';
 import { CreateItemDto } from '../dto/create-item.dto';
 import { UpdateItemDto } from '../dto/update-item.dto';
 import { ListItemsQueryDto } from '../dto/list-items-query.dto';
 import { ItemPhotoResponseDto } from '../dto/item-photo-response.dto';
+import { ItemPhoto } from '../schemas/item-photo.schema';
 import { ItemMapper } from '../mappers/item.mapper';
 
 @Injectable()
@@ -53,7 +54,15 @@ export class ItemService {
   async create(ownerId: string, dto: CreateItemDto) {
     await this.containerService.findById(ownerId, dto.containerId);
 
-    const created = await this.repo.create(ownerId, dto);
+    const { photos: photoKeys, ...rest } = dto;
+
+    const photos = photoKeys
+      ? await this.resolvePhotos(ownerId, [], photoKeys)
+      : [];
+
+    const payload: CreateItemData = { ...rest, ownerId, photos };
+
+    const created = await this.repo.create(payload);
 
     return ItemMapper.toResponseDto(created, this.storage.buildUrl);
   }
@@ -66,24 +75,16 @@ export class ItemService {
       await this.containerService.findById(ownerId, dto.containerId);
     }
 
-    const payload: UpdateItemData = {
-      name: dto.name,
-      quantity: dto.quantity,
-      description: dto.description,
-      containerId: dto.containerId,
-    };
+    const { photos: photoKeys, ...rest } = dto;
 
-    // photos: атомарный replace. Если key исчез из нового массива — чистим S3.
-    if (dto.photos !== undefined) {
-      const oldKeys = item.photos.map((p) => p.key);
+    const payload: UpdateItemData = { ...rest };
 
-      const newKeys = dto.photos.map((p) => p.key);
-
-      const removedKeys = oldKeys.filter((k) => !newKeys.includes(k));
-
-      await this.deleteFromStorage(removedKeys);
-
-      payload.photos = dto.photos;
+    if (photoKeys !== undefined) {
+      payload.photos = await this.resolvePhotos(
+        ownerId,
+        item.photos,
+        photoKeys,
+      );
     }
 
     const updated = await this.repo.update(id, payload);
@@ -96,7 +97,6 @@ export class ItemService {
 
     if (!item) throw new NotFoundException('Item not found');
 
-    // каскад: чистим S3 по всем key, потом сам Item
     await this.deleteFromStorage(item.photos.map((p) => p.key));
 
     await this.repo.delete(id);
@@ -104,17 +104,14 @@ export class ItemService {
     return { id };
   }
 
-  /**
-   *  Загрузка файла в S3. БД не трогаем — метадата вернётся клиенту,
-   *  он потом передаст её в PATCH /items/:id { photos: [...] }.
-   */
   async uploadPhoto(
     ownerId: string,
     file: Express.Multer.File,
   ): Promise<ItemPhotoResponseDto> {
     if (!file) throw new BadRequestException('file is required');
 
-    const key = `users/${ownerId}/${randomUUID()}-${file.originalname}`;
+    const key = `${userStoragePrefix(ownerId)}${uuidv4()}-${file.originalname}`;
+
     await this.storage.upload(key, file);
 
     return {
@@ -125,9 +122,44 @@ export class ItemService {
     };
   }
 
-  // ── private ───────────────────────────────────────────────
+  private async resolvePhotos(
+    ownerId: string,
+    existing: ItemPhoto[],
+    nextKeys: string[],
+  ): Promise<ItemPhoto[]> {
+    const existingMap = new Map(existing.map((p) => [p.key, p]));
+    const nextSet = new Set(nextKeys);
 
-  /** Best-effort удаление файлов из S3. Если упало — просто игнорим (orphan-байты). */
+    // удалённые из S3
+    const removed = existing
+      .filter((p) => !nextSet.has(p.key))
+      .map((p) => p.key);
+    await this.deleteFromStorage(removed);
+
+    // resolve по порядку
+    return Promise.all(
+      nextKeys.map(async (key) => {
+        const existed = existingMap.get(key);
+        if (existed) return existed;
+
+        this.assertOwnsKey(ownerId, key);
+
+        try {
+          const meta = await this.storage.head(key);
+          return { key, mimeType: meta.mimeType, size: meta.size };
+        } catch {
+          throw new BadRequestException(`photo not found in storage: ${key}`);
+        }
+      }),
+    );
+  }
+
+  private assertOwnsKey(ownerId: string, key: string) {
+    if (!key.startsWith(userStoragePrefix(ownerId))) {
+      throw new BadRequestException('photo key does not belong to user');
+    }
+  }
+
   private async deleteFromStorage(keys: string[]) {
     if (keys.length === 0) return;
     await Promise.all(

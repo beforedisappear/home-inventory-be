@@ -1,4 +1,6 @@
 import {
+  ArrayUnique,
+  IsArray,
   IsInt,
   IsMongoId,
   IsOptional,
@@ -26,4 +28,10 @@ export class CreateItemDto {
   @IsString()
   @MaxLength(2048)
   description?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  @IsString({ each: true })
+  photos?: string[];
 }
