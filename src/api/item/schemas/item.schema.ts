@@ -4,6 +4,7 @@ import { Types } from 'mongoose';
 
 import type { TimestampedDocument } from '@/shared/types/mongo';
 
+import { QR_STATUSES, type QrStatus } from '../interfaces/qr.types';
 import { ItemPhoto, ItemPhotoSchema } from './item-photo.schema';
 
 export type ItemDocument = TimestampedDocument<Item>;
@@ -43,6 +44,12 @@ export class Item {
   // wrapper-subdocs со ссылками на File. Порядок сохраняется (как добавили).
   @Prop({ type: [ItemPhotoSchema], default: [] })
   photos: ItemPhoto[];
+
+  @Prop({ type: String, enum: QR_STATUSES, default: 'none' })
+  qrStatus: QrStatus;
+
+  @Prop({ type: String, default: null })
+  qrKey: string | null;
 }
 
 export const ItemSchema = SchemaFactory.createForClass(Item);

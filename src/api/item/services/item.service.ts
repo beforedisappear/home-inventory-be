@@ -16,6 +16,7 @@ import { CreateItemData, UpdateItemData } from '../interfaces';
 import { ItemMapper } from '../mappers/item.mapper';
 import { ItemRepository } from '../repositories/item.repository';
 import { ItemPhotoService } from './item-photo.service';
+import { ItemQrService } from './item-qr.service';
 
 @Injectable()
 export class ItemService {
@@ -23,6 +24,7 @@ export class ItemService {
     private readonly repo: ItemRepository,
     private readonly storage: StorageService,
     private readonly photoService: ItemPhotoService,
+    private readonly qrService: ItemQrService,
 
     @Inject(forwardRef(() => ContainerService))
     private readonly containerService: ContainerService,
@@ -116,9 +118,31 @@ export class ItemService {
     if (!item) throw new NotFoundException('Item not found');
 
     await this.photoService.deleteAll(item.photos.map((p) => p.key));
+    await this.qrService.deleteIfExists(item.qrKey);
 
     await this.repo.delete(id);
 
     return { id };
+  }
+
+  async getQr(ownerId: string, id: string) {
+    const item = await this.repo.findByIdAndOwner(id, ownerId);
+
+    if (!item) throw new NotFoundException('Item not found');
+
+    return ItemMapper.toQrResponseDto(item, this.storage.buildUrl);
+  }
+
+  async generateQr(ownerId: string, id: string) {
+    const item = await this.repo.findByIdAndOwner(id, ownerId);
+
+    if (!item) throw new NotFoundException('Item not found');
+
+    await this.qrService.enqueueGenerate(id, ownerId);
+
+    // отражаем новое состояние сразу, не делая лишний read
+    item.qrStatus = 'pending';
+
+    return ItemMapper.toQrResponseDto(item, this.storage.buildUrl);
   }
 }

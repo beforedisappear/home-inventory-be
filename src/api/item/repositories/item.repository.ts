@@ -65,4 +65,26 @@ export class ItemRepository {
       .updateMany({ categoryId }, { $set: { categoryId: null } })
       .exec();
   }
+
+  setQrPending(id: string) {
+    return this.model
+      .findOneAndUpdate(
+        { _id: id, qrStatus: { $ne: 'pending' } },
+        { $set: { qrStatus: 'pending' } },
+        { new: true },
+      )
+      .exec();
+  }
+
+  setQrReady(id: string, key: string) {
+    return this.model
+      .updateOne({ _id: id }, { $set: { qrStatus: 'ready', qrKey: key } })
+      .exec();
+  }
+
+  setQrFailed(id: string) {
+    return this.model
+      .updateOne({ _id: id }, { $set: { qrStatus: 'failed' } })
+      .exec();
+  }
 }

@@ -80,4 +80,16 @@ export class ItemController {
   delete(@UserId() userId: string, @Param('id') id: string) {
     return this.itemService.delete(userId, id);
   }
+
+  @ApiOperation({ summary: 'Получить QR-код' })
+  @Get(':id/qr')
+  getQr(@UserId() userId: string, @Param('id') id: string) {
+    return this.itemService.getQr(userId, id);
+  }
+
+  @ApiOperation({ summary: 'Запустить генерацию QR-кода' })
+  @Post(':id/qr/generate')
+  generateQr(@UserId() userId: string, @Param('id') id: string) {
+    return this.itemService.generateQr(userId, id);
+  }
 }

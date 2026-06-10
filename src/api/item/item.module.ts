@@ -11,11 +11,14 @@ import { InfraModule } from '@/infra/infra.module';
 import { LibsModule } from '@/libs/libs.module';
 
 import { ITEM_PHOTO_QUEUE } from './constants/item-photo-queue';
+import { ITEM_QR_QUEUE } from './constants/item-qr-queue';
 import { ItemController } from './controllers/item.controller';
 import { ItemPhotoCompressProcessor } from './processors/item-photo-compress.processor';
+import { ItemQrGenerateProcessor } from './processors/item-qr-generate.processor';
 import { ItemRepository } from './repositories/item.repository';
 import { Item, ItemSchema } from './schemas/item.schema';
 import { ItemPhotoService } from './services/item-photo.service';
+import { ItemQrService } from './services/item-qr.service';
 import { ItemService } from './services/item.service';
 
 @Module({
@@ -26,8 +29,13 @@ import { ItemService } from './services/item.service';
     forwardRef(() => ContainerModule),
     forwardRef(() => CategoryModule),
     BullModule.registerQueue({ name: ITEM_PHOTO_QUEUE }),
+    BullModule.registerQueue({ name: ITEM_QR_QUEUE }),
     BullBoardModule.forFeature({
       name: ITEM_PHOTO_QUEUE,
+      adapter: BullMQAdapter,
+    }),
+    BullBoardModule.forFeature({
+      name: ITEM_QR_QUEUE,
       adapter: BullMQAdapter,
     }),
   ],
@@ -35,8 +43,10 @@ import { ItemService } from './services/item.service';
   providers: [
     ItemService,
     ItemPhotoService,
+    ItemQrService,
     ItemRepository,
     ItemPhotoCompressProcessor,
+    ItemQrGenerateProcessor,
   ],
   exports: [ItemService],
 })

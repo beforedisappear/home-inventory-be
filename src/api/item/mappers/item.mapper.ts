@@ -1,3 +1,4 @@
+import { ItemQrResponseDto } from '../dto/item-qr-response.dto';
 import { ItemResponseDto } from '../dto/item-response.dto';
 import { ItemDocument } from '../schemas/item.schema';
 
@@ -21,6 +22,16 @@ export class ItemMapper {
       })),
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
+    };
+  }
+
+  static toQrResponseDto(
+    doc: ItemDocument,
+    buildUrl: (key: string) => string,
+  ): ItemQrResponseDto {
+    return {
+      status: doc.qrStatus,
+      url: doc.qrKey ? buildUrl(doc.qrKey) : null,
     };
   }
 }
