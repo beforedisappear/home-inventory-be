@@ -47,6 +47,8 @@ npm run start:dev
 
 UI-консоли:
 
+- Swagger → http://localhost:3000/swagger
+- BullMQ → http://localhost:3000/queues
 - MinIO → http://localhost:9001 (minioadmin / minioadmin), создать bucket `home-inventory`
 - Mailpit → http://localhost:8025 (все письма из приложения ловятся сюда)
 
