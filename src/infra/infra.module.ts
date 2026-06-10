@@ -6,7 +6,7 @@ import { QueueModule } from './queue/queue.module';
 import { RedisModule } from './redis/redis.module';
 
 /**
- *  Модуль - агрегатор низкоуровневой инфраструктуры (глобальный)
+ *  Модуль - агрегатор низкоуровневой инфраструктуры
  */
 @Module({
   imports: [DatabaseModule, RedisModule, QueueModule, LoggerModule],
