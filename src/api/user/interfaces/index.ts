@@ -1,1 +1,1 @@
-export type { EmailChangePayload } from './email-change-payload';
+export type { EmailChangePayload } from './email-change-payload.interface';

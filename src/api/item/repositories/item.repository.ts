@@ -6,7 +6,7 @@ import { FilterQuery, Model } from 'mongoose';
 import { escapeRegex } from '@/shared/utils/escape-regex';
 
 import { CreateItemData, UpdateItemData } from '../interfaces';
-import { ItemFiltersData } from '../interfaces/item-filters-data';
+import { ItemFiltersData } from '../interfaces/item-filters-data.interface';
 import { Item, ItemDocument } from '../schemas/item.schema';
 
 @Injectable()

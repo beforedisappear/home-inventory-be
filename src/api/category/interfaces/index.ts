@@ -1,2 +1,2 @@
-export { CreateCategoryData } from './create-category-data';
-export { UpdateCategoryData } from './update-category-data';
+export { CreateCategoryData } from './create-category-data.interface';
+export { UpdateCategoryData } from './update-category-data.interface';
