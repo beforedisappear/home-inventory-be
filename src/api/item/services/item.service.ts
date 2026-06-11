@@ -7,6 +7,7 @@ import {
 
 import { CategoryService } from '@/api/category/services/category.service';
 import { ContainerService } from '@/api/container/services/container.service';
+import { DocumentService } from '@/api/document/services/document.service';
 import { StorageService } from '@/libs/storage/storage.service';
 
 import { CreateItemDto } from '../dto/create-item.dto';
@@ -31,6 +32,9 @@ export class ItemService {
 
     @Inject(forwardRef(() => CategoryService))
     private readonly categoryService: CategoryService,
+
+    @Inject(forwardRef(() => DocumentService))
+    private readonly documentService: DocumentService,
   ) {}
 
   existsByContainer(containerId: string) {
@@ -119,6 +123,7 @@ export class ItemService {
 
     await this.photoService.deleteAll(item.photos.map((p) => p.key));
     await this.qrService.deleteIfExists(item.qrKey);
+    await this.documentService.deleteAllByItem(id);
 
     await this.repo.delete(id);
 

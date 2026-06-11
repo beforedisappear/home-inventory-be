@@ -7,6 +7,7 @@ import { BullBoardModule } from '@bull-board/nestjs';
 
 import { CategoryModule } from '@/api/category/category.module';
 import { ContainerModule } from '@/api/container/container.module';
+import { DocumentModule } from '@/api/document/document.module';
 import { InfraModule } from '@/infra/infra.module';
 import { LibsModule } from '@/libs/libs.module';
 
@@ -28,6 +29,7 @@ import { ItemService } from './services/item.service';
     LibsModule,
     forwardRef(() => ContainerModule),
     forwardRef(() => CategoryModule),
+    forwardRef(() => DocumentModule),
     BullModule.registerQueue({ name: ITEM_PHOTO_QUEUE }),
     BullModule.registerQueue({ name: ITEM_QR_QUEUE }),
     BullBoardModule.forFeature({
