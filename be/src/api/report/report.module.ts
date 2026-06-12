@@ -19,6 +19,7 @@ import { ReportGenerateProcessor } from './processors/report-generate.processor'
 import { ReportRepository } from './repositories/report.repository';
 import { Report, ReportSchema } from './schemas/report.schema';
 import { ReportCleanupService } from './services/report-cleanup.service';
+import { ReportEventsService } from './services/report-events.service';
 import { ReportService } from './services/report.service';
 
 const devControllers: Type[] =
@@ -39,6 +40,7 @@ const devControllers: Type[] =
     ReportRepository,
     ReportGenerateProcessor,
     ReportCleanupService,
+    ReportEventsService,
   ],
 })
 export class ReportModule {}

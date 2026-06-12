@@ -11,6 +11,7 @@ import { REPORT_GENERATE_JOB, REPORT_QUEUE } from '../constants/report-queue';
 import { reportStorageKey } from '../constants/storage-keys';
 import { type ReportGenerateJobData } from '../interfaces/report-generate.interface';
 import { ReportRepository } from '../repositories/report.repository';
+import { ReportEventsService } from '../services/report-events.service';
 import { renderItemsPdf } from '../utils/render-items-pdf';
 
 @Processor(REPORT_QUEUE)
@@ -21,6 +22,7 @@ export class ReportGenerateProcessor extends WorkerHost {
     private readonly repo: ReportRepository,
     private readonly storage: StorageService,
     private readonly itemService: ItemService,
+    private readonly events: ReportEventsService,
   ) {
     super();
   }
@@ -67,6 +69,8 @@ export class ReportGenerateProcessor extends WorkerHost {
     await this.storage.uploadBuffer(key, pdf, REPORT_MIME);
 
     await this.repo.setReady(reportId, key, pdf.length, items.length);
+
+    this.events.emit({ userId: ownerId, reportId, status: 'ready' });
   }
 
   @OnWorkerEvent('failed')
@@ -79,6 +83,12 @@ export class ReportGenerateProcessor extends WorkerHost {
       await this.repo
         .setFailed(job.data.reportId, err.message)
         .catch(() => undefined);
+
+      this.events.emit({
+        userId: job.data.ownerId,
+        reportId: job.data.reportId,
+        status: 'failed',
+      });
     }
   }
 }
