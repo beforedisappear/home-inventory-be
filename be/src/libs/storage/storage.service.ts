@@ -8,6 +8,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class StorageService {
@@ -89,4 +90,13 @@ export class StorageService {
   buildUrl = (key: string): string => {
     return `${this.viewDomain}/${this.bucket}/${key}`;
   };
+
+  // временная подписанная ссылка для скачивания приватного объекта
+  getSignedDownloadUrl(key: string, expiresIn: number) {
+    return getSignedUrl(
+      this.s3,
+      new GetObjectCommand({ Bucket: this.bucket, Key: key }),
+      { expiresIn },
+    );
+  }
 }

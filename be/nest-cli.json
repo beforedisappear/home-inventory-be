@@ -6,7 +6,8 @@
     "deleteOutDir": true,
     "plugins": ["@nestjs/swagger"],
     "assets": [
-      { "include": "libs/mail/templates/**/*", "outDir": "dist" }
+      { "include": "libs/mail/templates/**/*", "outDir": "dist" },
+      { "include": "api/report/assets/fonts/**/*", "outDir": "dist" }
     ],
     "watchAssets": true
   }

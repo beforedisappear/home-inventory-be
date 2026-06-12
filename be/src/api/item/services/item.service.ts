@@ -14,6 +14,7 @@ import { CreateItemDto } from '../dto/create-item.dto';
 import { ListItemsQueryDto } from '../dto/list-items-query.dto';
 import { UpdateItemDto } from '../dto/update-item.dto';
 import { CreateItemData, UpdateItemData } from '../interfaces';
+import { ItemFiltersData } from '../interfaces/item-filters-data.interface';
 import { ItemMapper } from '../mappers/item.mapper';
 import { ItemRepository } from '../repositories/item.repository';
 import { ItemPhotoService } from './item-photo.service';
@@ -43,6 +44,15 @@ export class ItemService {
 
   unsetCategoryFromAll(categoryId: string) {
     return this.repo.unsetCategoryFromAll(categoryId);
+  }
+
+  // для отчётов: сырые документы по фильтрам (без обёртки в response DTO)
+  findRawByFilters(ownerId: string, filters: ItemFiltersData) {
+    return this.repo.findAll(ownerId, filters);
+  }
+
+  countByFilters(ownerId: string, filters: ItemFiltersData) {
+    return this.repo.countByFilters(ownerId, filters);
   }
 
   async findAll(ownerId: string, query: ListItemsQueryDto) {

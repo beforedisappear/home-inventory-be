@@ -21,6 +21,20 @@ export class ItemRepository {
   }
 
   findAll(ownerId: string, filters: ItemFiltersData) {
+    return this.model
+      .find(this.buildQuery(ownerId, filters))
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
+  countByFilters(ownerId: string, filters: ItemFiltersData) {
+    return this.model.countDocuments(this.buildQuery(ownerId, filters)).exec();
+  }
+
+  private buildQuery(
+    ownerId: string,
+    filters: ItemFiltersData,
+  ): FilterQuery<ItemDocument> {
     const query: FilterQuery<ItemDocument> = { ownerId };
 
     if (filters.containerId) query.containerId = filters.containerId;
@@ -30,7 +44,7 @@ export class ItemRepository {
       query.$or = [{ name: rx }, { description: rx }];
     }
 
-    return this.model.find(query).sort({ createdAt: -1 }).exec();
+    return query;
   }
 
   async existsByContainer(containerId: string): Promise<boolean> {

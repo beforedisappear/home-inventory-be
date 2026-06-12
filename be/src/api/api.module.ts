@@ -6,6 +6,7 @@ import { ContainerModule } from './container/container.module';
 import { DocumentModule } from './document/document.module';
 import { ItemModule } from './item/item.module';
 import { NotificationModule } from './notification/notification.module';
+import { ReportModule } from './report/report.module';
 import { UserModule } from './user/user.module';
 
 /**
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
     CategoryModule,
     DocumentModule,
     NotificationModule,
+    ReportModule,
   ],
   providers: [],
 })
