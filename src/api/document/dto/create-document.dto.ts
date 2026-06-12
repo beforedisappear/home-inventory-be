@@ -30,7 +30,7 @@ export class CreateDocumentDto {
   description?: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsDateString({ strict: true })
   warrantyEndsAt?: string;
 
   @IsString()

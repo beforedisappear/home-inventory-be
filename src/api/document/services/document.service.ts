@@ -11,7 +11,11 @@ import { StorageService } from '@/libs/storage/storage.service';
 import { CreateDocumentDto } from '../dto/create-document.dto';
 import { ListDocumentsQueryDto } from '../dto/list-documents-query.dto';
 import { UpdateDocumentDto } from '../dto/update-document.dto';
-import { CreateDocumentData, UpdateDocumentData } from '../interfaces';
+import {
+  CreateDocumentData,
+  ExpiringWarranty,
+  UpdateDocumentData,
+} from '../interfaces';
 import { DocumentMapper } from '../mappers/document.mapper';
 import { DocumentRepository } from '../repositories/document.repository';
 import { DocumentFileService } from './document-file.service';
@@ -116,5 +120,24 @@ export class DocumentService {
 
     await this.fileService.deleteMany(docs.map((d) => d.fileKey));
     await this.repo.deleteByItem(itemId);
+  }
+
+  // стриминг для cron-задач: без DTO/маппинга, без owner-фильтра.
+  // async generator — массив не накапливается; при throw/break cursor закрывается автоматически.
+  async *streamExpiringWarranties(
+    from: Date,
+    to: Date,
+  ): AsyncIterable<ExpiringWarranty> {
+    const cursor = this.repo.streamExpiringInWindow(from, to);
+
+    for await (const doc of cursor) {
+      yield {
+        documentId: doc._id.toString(),
+        type: doc.type,
+        itemId: doc.itemId.toString(),
+        ownerId: doc.ownerId.toString(),
+        warrantyEndsAt: doc.warrantyEndsAt!,
+      };
+    }
   }
 }

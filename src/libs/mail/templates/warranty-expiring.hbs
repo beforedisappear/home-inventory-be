@@ -1,0 +1,18 @@
+<html>
+  <body style='font-family: sans-serif;'>
+    <h1>Гарантия скоро закончится</h1>
+    <p>{{#if userName}}Привет, {{userName}}!{{else}}Привет!{{/if}}</p>
+    <p>
+      Гарантия на
+      <strong>{{itemName}}</strong>
+      истекает через
+      <strong>{{daysLeft}} дн.</strong>
+      ({{warrantyEndsAt}}).
+    </p>
+    <p>Тип документа: {{documentType}}.</p>
+    <p style='color: #666; font-size: 12px;'>
+      Если ты не хочешь больше получать такие письма — отпишись в настройках
+      профиля.
+    </p>
+  </body>
+</html>

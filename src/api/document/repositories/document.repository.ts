@@ -49,4 +49,16 @@ export class DocumentRepository {
   deleteByItem(itemId: string) {
     return this.model.deleteMany({ itemId }).exec();
   }
+
+  // стриминг документов с истекающей гарантией в окне [from, to) — для cron'а
+  streamExpiringInWindow(from: Date, to: Date) {
+    return (
+      this.model
+        .find({ warrantyEndsAt: { $gte: from, $lt: to } })
+        //без mongoose-hydration
+        .lean()
+        //  server-side счетчик на стороне монго, в RAM держим максимум один батч
+        .cursor({ batchSize: 100 })
+    );
+  }
 }
