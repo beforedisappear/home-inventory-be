@@ -24,7 +24,7 @@ import { ContainerService } from '../services/container.service';
 export class ContainerController {
   constructor(private readonly containerService: ContainerService) {}
 
-  @ApiOperation({ summary: 'Контейнеры верхнего уровня' })
+  @ApiOperation({ summary: 'Список контейнеров на одном уровне' })
   @Get()
   findChildren(
     @UserId() userId: string,
