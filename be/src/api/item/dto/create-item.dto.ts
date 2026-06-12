@@ -1,4 +1,6 @@
+import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   ArrayUnique,
   IsArray,
   IsInt,
@@ -8,7 +10,11 @@ import {
   MaxLength,
   Min,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
+
+import { CUSTOM_FIELDS_MAX } from '../constants/custom-field';
+import { CustomFieldDto } from './custom-field.dto';
 
 export class CreateItemDto {
   @IsMongoId()
@@ -38,4 +44,14 @@ export class CreateItemDto {
   @ArrayUnique()
   @IsString({ each: true })
   photos?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(CUSTOM_FIELDS_MAX)
+  @ArrayUnique((f: CustomFieldDto) => f.key, {
+    message: 'customFields must not contain duplicate keys',
+  })
+  @ValidateNested({ each: true })
+  @Type(() => CustomFieldDto)
+  customFields?: CustomFieldDto[];
 }

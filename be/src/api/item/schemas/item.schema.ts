@@ -5,6 +5,7 @@ import { Types } from 'mongoose';
 import type { TimestampedDocument } from '@/shared/types/mongo';
 
 import { QR_STATUSES, type QrStatus } from '../interfaces/qr.types';
+import { CustomField, CustomFieldSchema } from './custom-field.schema';
 import { ItemPhoto, ItemPhotoSchema } from './item-photo.schema';
 
 export type ItemDocument = TimestampedDocument<Item>;
@@ -50,6 +51,9 @@ export class Item {
 
   @Prop({ type: String, default: null })
   qrKey: string | null;
+
+  @Prop({ type: [CustomFieldSchema], default: [] })
+  customFields: CustomField[];
 }
 
 export const ItemSchema = SchemaFactory.createForClass(Item);

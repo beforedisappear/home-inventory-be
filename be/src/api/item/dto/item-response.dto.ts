@@ -10,6 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+import { CustomFieldDto } from './custom-field.dto';
 import { ItemPhotoResponseDto } from './item-photo-response.dto';
 
 export class ItemResponseDto {
@@ -39,6 +40,11 @@ export class ItemResponseDto {
   @ValidateNested({ each: true })
   @Type(() => ItemPhotoResponseDto)
   photos: ItemPhotoResponseDto[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CustomFieldDto)
+  customFields: CustomFieldDto[];
 
   @IsDate()
   createdAt: Date;

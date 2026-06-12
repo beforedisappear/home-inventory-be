@@ -20,6 +20,11 @@ export class ItemMapper {
         mimeType: p.mimeType,
         size: p.size,
       })),
+      customFields: doc.customFields.map((f) => ({
+        key: f.key,
+        type: f.type,
+        value: f.value,
+      })),
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };
