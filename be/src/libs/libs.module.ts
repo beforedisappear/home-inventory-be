@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { AiModule } from './ai/ai.module';
 import { MailModule } from './mail/mail.module';
 import { StorageModule } from './storage/storage.module';
 
@@ -7,7 +8,7 @@ import { StorageModule } from './storage/storage.module';
  *  Модуль - агрегатор внутренних сервисов-обёрток над внешними решениями (глобальный)
  */
 @Module({
-  imports: [StorageModule, MailModule],
-  exports: [StorageModule, MailModule],
+  imports: [StorageModule, MailModule, AiModule],
+  exports: [StorageModule, MailModule, AiModule],
 })
 export class LibsModule {}
