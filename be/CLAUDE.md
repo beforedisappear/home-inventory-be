@@ -26,6 +26,10 @@ npm run test:e2e        # test/jest-e2e.json
 
 Pre-commit hook runs `lint-staged` (prettier + eslint --fix on staged files) via Husky.
 
+## Git
+
+- Don't add a `Co-Authored-By` trailer or any AI/assistant attribution to commit messages.
+
 ## Architecture
 
 NestJS 11 + MongoDB modular monolith. Layers, top-down:
