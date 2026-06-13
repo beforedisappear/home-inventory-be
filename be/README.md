@@ -4,16 +4,16 @@
 
 ## Стек
 
-| Слой               | Технология                                             |
-| ------------------ | ------------------------------------------------------ |
-| Framework          | NestJS 11 + TypeScript                                 |
-| База данных        | MongoDB + Mongoose                                     |
-| Кэш                | Redis + ioredis                                        |
-| Очереди            | BullMQ                                                 |
-| Файловое хранилище | S3 (AWS SDK v3) / MinIO                                |
-| Почта              | Nodemailer + @nestjs-modules/mailer + Handlebars       |
-| Аутентификация     | JWT + Passport                                         |
-| AI / Vision        | Провайдер-агностик SDK (mock / Gemini / Groq / Ollama) |
+| Слой               | Технология                                       |
+| ------------------ | ------------------------------------------------ |
+| Framework          | NestJS 11 + TypeScript                           |
+| База данных        | MongoDB + Mongoose                               |
+| Кэш                | Redis + ioredis                                  |
+| Очереди            | BullMQ                                           |
+| Файловое хранилище | S3 (AWS SDK v3) / MinIO                          |
+| Почта              | Nodemailer + @nestjs-modules/mailer + Handlebars |
+| Аутентификация     | JWT + Passport                                   |
+| AI                 | openai sdk                                       |
 
 ### Структура
 
@@ -141,6 +141,4 @@ UI-консоли:
   (название, описание, категория, custom fields)
 - Распознавание **не создаёт** вещь — отдаёт черновик, юзер правит и сабмитит `POST /items`
 - Асинхронно (BullMQ): клиент получает id, поллит статус + SSE-уведомление о готовности распознавания
-- Отмена запущенного распознавания (`DELETE /items/recognitions/:id`)
-- Провайдер-агностик: домен зависит от порта `VisionModel`, конкретная модель
-  выбирается через `VISION_PROVIDER`
+- Отмена запущенного распознавания (`DELETE /recognitions/:id`)
